@@ -155,7 +155,7 @@ const refreshMeals = () => {
 <template>
   <div class="h-screen bg-green-100">
     <!-- Header -->
-    <div class="fixed top-0 left-0 flex items-center justify-between w-full p-5 bg-green-900 lg:space-x-20 lg:px-20 lg:pl-[20%] lg:ml-10 rounded-br-md">
+    <div class="fixed z-20 top-0 left-0 flex items-center justify-between w-full p-5 bg-green-900 lg:space-x-20 lg:px-20 lg:pl-[20%] lg:ml-10 rounded-b-md">
       <h1 class="hidden text-xl font-bold text-green-50 lg:flex md:text-2xl">Meals</h1>
 
       <!-- Search Input -->
@@ -185,12 +185,10 @@ const refreshMeals = () => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center pt-40">
-      <div class="flex flex-col items-center">
-        <div class="w-12 h-12 border-4 border-t-4 border-green-500 rounded-full animate-spin"></div>
-        <p class="mt-4 text-lg">Loading meals...</p>
-      </div>
+    <div v-if="isLoading" class="flex items-center justify-center h-64 md:ml-[30%] lg:ml-[20%] lg:pt-[20%]">
+      <div class="w-16 h-16 border-t-4 border-b-4 border-green-600 rounded-full animate-spin"></div>
     </div>
+
 
     <!-- Error State -->
     <div v-else-if="error" class="flex items-center justify-center pt-40">
@@ -218,7 +216,7 @@ const refreshMeals = () => {
     <!-- Meal Cards -->
     <div v-else class="pt-20">
       <div class="px-12 mb-4 text-3xl font-bold">
-        <h1>Meal<span class="text-green-400">Plan</span></h1>
+        <h1>Meals</h1>
       </div>
 
       <div class="grid grid-cols-1 gap-5 mx-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 lg:ml-[21%] lg:mr-10">

@@ -187,6 +187,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen px-4 py-8 bg-green-50 md:ml-[20%]">
+
     <div class="max-w-6xl mx-auto">
       <!-- Header -->
       <div class="flex flex-col mb-6 md:flex-row md:items-center md:justify-between">

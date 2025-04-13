@@ -86,7 +86,7 @@ const editMealPlan = () => {
 
 // Navigate back to meal plans list
 const goToMealPlans = () => {
-  router.push('/meal-plan');
+  router.push('/meal-plans');
 };
 
 // Load meal plan on component mount

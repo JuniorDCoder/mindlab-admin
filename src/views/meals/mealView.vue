@@ -115,11 +115,8 @@ onMounted(() => {
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex items-center justify-center p-20">
-      <div class="flex flex-col items-center">
-        <div class="w-16 h-16 border-4 border-t-4 border-green-500 rounded-full animate-spin"></div>
-        <p class="mt-4 text-lg">Loading meal details...</p>
-      </div>
+    <div v-if="isLoading" class="flex items-center justify-center h-64">
+      <div class="w-16 h-16 border-t-4 border-b-4 border-green-600 rounded-full animate-spin"></div>
     </div>
 
     <!-- Error State -->

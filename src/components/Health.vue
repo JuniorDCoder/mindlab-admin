@@ -157,7 +157,8 @@ const goToProfile = () => {
 
 <template>
   <div @click="closeDropdown" class="min-h-screen">
-    <div class="fixed top-0 left-0 z-10 flex items-center justify-between w-full p-5 bg-green-900 lg:px-20 lg:pl-[20%] lg:ml-10 rounded-br-md">
+    <div class="fixed top-0 left-0 z-10 flex items-center justify-between w-full p-5 bg-green-900 px-4 sm:px-6 md:px-10 lg:pl-[20%] rounded-b-md">
+
       <h1 class="hidden text-xl font-semibold text-green-50 lg:flex">Dashboard</h1>
 
       <!-- User Profile Section with Dropdown -->
@@ -196,7 +197,7 @@ const goToProfile = () => {
 
         <!-- Loading Spinner -->
         <div v-if="isLoading" class="flex items-center justify-center h-64">
-          <div class="loader"></div>
+          <div class="w-16 h-16 border-t-4 border-b-4 border-green-600 rounded-full animate-spin"></div>
         </div>
 
         <!-- Stats Cards -->

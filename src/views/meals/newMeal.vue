@@ -8,18 +8,26 @@ const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 
-// Define meal data structure based on Parse Back4App model
+// Define meal data structure
 const mealData = reactive({
   name: '',
   description: '',
   mealType: 'breakfast',
   items: [],
+  ingredients: [], // Added ingredients array
   schedule: '',
   note: ''
 });
 
 // Available meal types
-const mealTypes =['breakfast', 'lunch', 'dinner', 'snack', 'premium'];
+const mealTypes = ['breakfast', 'lunch', 'dinner', 'snack', 'premium'];
+
+// Ingredients management
+const allIngredients = ref([]);
+const loadingIngredients = ref(false);
+const ingredientSearchQuery = ref('');
+const filteredIngredients = ref([]);
+const showIngredientDropdown = ref(false);
 
 // For dynamically adding meal items
 const newItem = ref('');
@@ -27,6 +35,58 @@ const newItem = ref('');
 // Handle image input
 const imageFile = ref(null);
 const imagePreview = ref(null);
+
+// Fetch all ingredients from Parse
+const fetchAllIngredients = async () => {
+  loadingIngredients.value = true;
+  try {
+    const Ingredient = Parse.Object.extend('Ingredients');
+    const query = new Parse.Query(Ingredient);
+    query.limit(1000);
+    const results = await query.find();
+
+    allIngredients.value = results.map(ingredient => ({
+      id: ingredient.id,
+      name: ingredient.get('name') || 'Unnamed Ingredient',
+      imageUrl: ingredient.get('image')?.url() || null,
+      parseObject: ingredient
+    }));
+
+    filteredIngredients.value = [...allIngredients.value];
+  } catch (error) {
+    console.error('Error fetching ingredients:', error);
+    errorMessage.value = 'Failed to load ingredients.';
+  } finally {
+    loadingIngredients.value = false;
+  }
+};
+
+// Filter ingredients based on search
+const filterIngredients = () => {
+  if (!ingredientSearchQuery.value) {
+    filteredIngredients.value = [...allIngredients.value];
+    return;
+  }
+
+  const query = ingredientSearchQuery.value.toLowerCase();
+  filteredIngredients.value = allIngredients.value.filter(ingredient =>
+    ingredient.name.toLowerCase().includes(query)
+  );
+};
+
+// Add ingredient to meal
+const addIngredient = (ingredient) => {
+  if (!mealData.ingredients.some(i => i.id === ingredient.id)) {
+    mealData.ingredients.push(ingredient);
+  }
+  showIngredientDropdown.value = false;
+  ingredientSearchQuery.value = '';
+};
+
+// Remove ingredient from meal
+const removeIngredient = (index) => {
+  mealData.ingredients.splice(index, 1);
+};
 
 const handleImageSelect = (event) => {
   const file = event.target.files[0];
@@ -105,8 +165,20 @@ const saveMeal = async () => {
       meal.set('image', parseFile);
     }
 
-    // Save meal to Parse
-    await meal.save();
+    // Save meal to Parse first to get an ID
+    const savedMeal = await meal.save();
+
+    // Handle ingredients relation if any ingredients were added
+    if (mealData.ingredients.length > 0) {
+      const ingredientsRelation = savedMeal.relation('ingredients');
+      mealData.ingredients.forEach(ingredient => {
+        const ingredientPointer = Parse.Object.extend('Ingredients').createWithoutData(ingredient.id);
+        ingredientsRelation.add(ingredientPointer);
+      });
+
+      // Save the relation changes
+      await savedMeal.save();
+    }
 
     // Show success message
     successMessage.value = 'Meal created successfully!';
@@ -128,6 +200,9 @@ const saveMeal = async () => {
 const cancelCreate = () => {
   router.push('/meals');
 };
+
+// Load ingredients when component mounts
+fetchAllIngredients();
 </script>
 
 <template>
@@ -281,47 +356,114 @@ const cancelCreate = () => {
                   placeholder="Any special notes about this meal..."
                 ></textarea>
               </div>
+            </div>
+          </div>
 
-              <!-- Meal Items -->
-              <div>
-                <label class="block mb-1 text-sm font-medium text-gray-700">
-                  Meal Items
-                </label>
-                <div class="flex mb-2 space-x-2">
-                  <input
-                    v-model="newItem"
-                    type="text"
-                    class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    placeholder="Add an item"
-                    @keyup.enter="addItem"
-                  >
-                  <button
-                    type="button"
-                    @click="addItem"
-                    class="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
-                  >
-                    Add
+          <!-- Ingredients Section -->
+          <div class="p-6 mt-6 rounded-lg bg-gray-50">
+            <h2 class="mb-4 text-lg font-semibold text-gray-800">Ingredients</h2>
+
+            <!-- Selected Ingredients -->
+            <div v-if="mealData.ingredients.length > 0" class="mb-6">
+              <h3 class="mb-2 text-sm font-medium text-gray-700">Selected Ingredients</h3>
+              <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <div v-for="(ingredient, index) in mealData.ingredients" :key="ingredient.id"
+                     class="flex items-center p-3 bg-white border rounded-lg shadow-sm">
+                  <div v-if="ingredient.imageUrl" class="flex-shrink-0 w-10 h-10 mr-3 overflow-hidden rounded-full">
+                    <img :src="ingredient.imageUrl" :alt="ingredient.name" class="object-cover w-full h-full">
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ ingredient.name }}</p>
+                  </div>
+                  <button @click="removeIngredient(index)" class="ml-2 text-red-500 hover:text-red-700">
+                    <i class="pi pi-times"></i>
                   </button>
                 </div>
-
-                <div v-if="mealData.items.length > 0" class="border border-gray-200 rounded-lg bg-gray-50">
-                  <ul class="overflow-y-auto divide-y divide-gray-200 max-h-40">
-                    <li v-for="(item, index) in mealData.items" :key="index" class="flex items-center justify-between px-4 py-2">
-                      <span>{{ item }}</span>
-                      <button
-                        type="button"
-                        @click="removeItem(index)"
-                        class="text-red-500 hover:text-red-700"
-                      >
-                        <i class="pi pi-times"></i>
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-                <p v-else class="py-3 text-sm italic text-center text-gray-500 border border-gray-200 rounded-lg bg-gray-50">
-                  No items added yet
-                </p>
               </div>
+            </div>
+
+            <!-- Add Ingredients -->
+            <div>
+              <label class="block mb-2 text-sm font-medium text-gray-700">Add Ingredients</label>
+              <div class="relative">
+                <div class="flex items-center px-3 py-2 border border-gray-300 rounded-lg">
+                  <i class="mr-2 text-gray-400 pi pi-search"></i>
+                  <input
+                    type="text"
+                    v-model="ingredientSearchQuery"
+                    @focus="showIngredientDropdown = true"
+                    placeholder="Search ingredients to add"
+                    class="flex-1 bg-transparent focus:outline-none"
+                  />
+                </div>
+
+                <!-- Ingredients Dropdown -->
+                <div v-if="showIngredientDropdown" class="absolute z-10 w-full mt-1 overflow-y-auto bg-white border border-gray-300 rounded-lg shadow-lg max-h-64">
+                  <div v-if="loadingIngredients" class="flex items-center justify-center p-4">
+                    <div class="w-5 h-5 border-t-2 border-b-2 border-green-600 rounded-full animate-spin"></div>
+                    <span class="ml-2 text-sm text-gray-600">Loading ingredients...</span>
+                  </div>
+
+                  <div v-else-if="filteredIngredients.length === 0" class="p-3 text-sm text-gray-500">
+                    No ingredients found matching your search
+                  </div>
+
+                  <div v-else>
+                    <div v-for="ingredient in filteredIngredients" :key="ingredient.id"
+                         @click="addIngredient(ingredient)"
+                         class="flex items-center p-3 cursor-pointer hover:bg-gray-100">
+                      <div v-if="ingredient.imageUrl" class="flex-shrink-0 w-8 h-8 mr-3 overflow-hidden rounded-full">
+                        <img :src="ingredient.imageUrl" :alt="ingredient.name" class="object-cover w-full h-full">
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ ingredient.name }}</p>
+                      </div>
+                      <i class="ml-2 text-green-500 pi pi-plus"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Meal Items Section -->
+          <div class="p-6 mt-6 rounded-lg bg-gray-50">
+            <h2 class="mb-4 text-lg font-semibold text-gray-800">Meal Items</h2>
+
+            <div class="mb-4">
+              <label class="block mb-2 text-sm font-medium text-gray-700">Add Items</label>
+              <div class="flex mb-2 space-x-2">
+                <input
+                  v-model="newItem"
+                  type="text"
+                  class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                  placeholder="Add an item"
+                  @keyup.enter="addItem"
+                >
+                <button
+                  type="button"
+                  @click="addItem"
+                  class="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700"
+                >
+                  Add
+                </button>
+              </div>
+
+              <ul v-if="mealData.items.length > 0" class="overflow-y-auto divide-y divide-gray-200 rounded-lg bg-gray-50 max-h-48">
+                <li v-for="(item, index) in mealData.items" :key="index" class="flex items-center justify-between px-3 py-2">
+                  <span>{{ item }}</span>
+                  <button
+                    type="button"
+                    @click="removeItem(index)"
+                    class="text-red-500 hover:text-red-700"
+                  >
+                    <i class="pi pi-times"></i>
+                  </button>
+                </li>
+              </ul>
+              <p v-else class="py-2 text-sm italic text-center text-gray-500">
+                No items added yet
+              </p>
             </div>
           </div>
 

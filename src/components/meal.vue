@@ -101,7 +101,7 @@ const updateMealPlanTotal = (meal) => {
     <div class="hidden px-12 text-3xl font-bold md:flex sm:flex">
       <h1>Meal<span class="text-green-400">Plan</span></h1>
     </div>
-    <div class="grid grid-cols-2 gap-5 mx-10 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 lg:ml-[21%] pt-28 md:mt-2 lg:mr-10 lg:mt-0">
+    <div class="grid grid-cols-2 gap-5 mx-10 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 lg:ml-[%] pt-28 md:mt-2 lg:mr-10 lg:mt-0">
 
       <div
         v-for="meal in filteredMeals"

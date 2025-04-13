@@ -31,7 +31,9 @@ const handleLogin = async () => {
     const password = String(form.value.password);
 
     const user = await Parse.User.logIn(username, password);
-    console.log("Login successful:", user);
+
+    if (user.get('isAdmin') !== true) {
+      console.log("Login successful:", user);
 
     // Store session token if remember me is checked
     if (form.value.rememberMe) {
@@ -40,6 +42,12 @@ const handleLogin = async () => {
 
     // Redirect to the dashboard
     router.push('/dashboard');
+    } else {
+      errorMessage.value = "You do not have permission to access this application.";
+      console.log("User is not an admin:", user);
+      form.value.password = '';
+    }
+
   } catch (error) {
     console.error("Login failed:", error);
     errorMessage.value = error.message || "Login failed. Please try again.";

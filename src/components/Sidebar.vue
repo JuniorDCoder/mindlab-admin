@@ -62,7 +62,7 @@ const cancelLogout = () => {
     <button
       v-if="!isOpen"
       @click="toggleSidebar"
-      class="fixed z-10 px-3 py-2 text-white bg-green-700 rounded-md top-5 left-5 lg:hidden"
+      class="fixed z-50 px-3 py-2 text-white bg-green-700 rounded-md top-5 left-5 lg:hidden"
     >
       <i class="pi pi-bars"></i>
     </button>
@@ -94,7 +94,7 @@ const cancelLogout = () => {
         <RouterLink to="/dashboard" @click="handleNavClick">
           <div :class="[isActiveLink('/dashboard') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-white pi pi-ethereum"></i>
-            <h3 class="text-gray-200">Health List</h3>
+            <h3 class="text-gray-200">Dashboard</h3>
           </div>
         </RouterLink>
         <RouterLink to="/meals" @click="handleNavClick">
@@ -104,14 +104,14 @@ const cancelLogout = () => {
           </div>
         </RouterLink>
 
-        <RouterLink to="/meal-plan" @click="handleNavClick">
-          <div :class="[isActiveLink('/meal-plan') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
+        <RouterLink to="/meal-plans" @click="handleNavClick">
+          <div :class="[isActiveLink('/meal-plans') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-red-400 pi pi-slack"></i>
             <h3 class="text-gray-200">Meal Plans</h3>
           </div>
         </RouterLink>
 
-        <RouterLink to="/subscriptions" @click="handleNavClick">
+        <!-- <RouterLink to="/subscriptions" @click="handleNavClick">
           <div :class="[isActiveLink('/subscriptions') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-yellow-500 pi pi-crown"></i>
             <h3 class="text-gray-200">Subscriptions</h3>
@@ -123,13 +123,13 @@ const cancelLogout = () => {
             <i class="pt-1 text-white pi pi-user"></i>
             <h3 class="text-gray-200">Community</h3>
           </div>
-        </RouterLink>
+        </RouterLink> -->
 
         <!-- New Navigation Items -->
-        <RouterLink to="/health-record" @click="handleNavClick">
-          <div :class="[isActiveLink('/health-record') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
+        <RouterLink to="/health-records" @click="handleNavClick">
+          <div :class="[isActiveLink('/health-records') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-blue-400 pi pi-heart"></i>
-            <h3 class="text-gray-200">Health Record</h3>
+            <h3 class="text-gray-200">Health Records</h3>
           </div>
         </RouterLink>
 
@@ -140,12 +140,12 @@ const cancelLogout = () => {
           </div>
         </RouterLink>
 
-        <RouterLink to="/notes" @click="handleNavClick">
+        <!-- <RouterLink to="/notes" @click="handleNavClick">
           <div :class="[isActiveLink('/notes') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-purple-400 pi pi-pencil"></i>
             <h3 class="text-gray-200">Notes</h3>
           </div>
-        </RouterLink>
+        </RouterLink> -->
 
         <RouterLink to="/profiles" @click="handleNavClick">
           <div :class="[isActiveLink('/profiles') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
@@ -154,12 +154,12 @@ const cancelLogout = () => {
           </div>
         </RouterLink>
 
-        <RouterLink to="/menu-item" @click="handleNavClick">
+        <!-- <RouterLink to="/menu-item" @click="handleNavClick">
           <div :class="[isActiveLink('/menu-item') ? 'bg-green-600 hover:bg-green-500' : '', 'flex space-x-2 py-2 px-2 my-4 border rounded-md shadow-md hover:scale-110 transition-transform']">
             <i class="pt-1 text-pink-400 pi pi-list"></i>
             <h3 class="text-gray-200">Menu Item</h3>
           </div>
-        </RouterLink>
+        </RouterLink> -->
 
         <button @click="handleLogout" class="w-full text-left">
           <div class="flex px-2 py-2 my-4 space-x-2 transition-transform border rounded-md shadow-md hover:bg-red-500">
